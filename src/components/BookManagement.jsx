@@ -3,16 +3,17 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   fetchBooks,
   createBook,
-  removeBook,
   editBook,
 } from "../features/books/bookSlice.js";
 
 export default function BookManagement() {
   const dispatch = useDispatch();
   const books = useSelector((state) => state.book.books);
+  const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editBookId, setEditBookId] = useState(null);
   const [newBook, setNewBook] = useState({
     title: "",
     author: "",
@@ -22,11 +23,24 @@ export default function BookManagement() {
     totalCopies: "",
     availableCopies: "",
   });
-  const [editBookId, setEditBookId] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchBooks());
+    dispatch(fetchBooks()).finally(() => setLoading(false));
   }, [dispatch]);
+
+  const resetForm = () => {
+    setNewBook({
+      title: "",
+      author: "",
+      genre: "",
+      isbn: "",
+      yearPublished: "",
+      totalCopies: "",
+      availableCopies: "",
+    });
+    setErrorMessage("");
+    setEditBookId(null);
+  };
 
   const handleAddBook = () => {
     const currentYear = new Date().getFullYear();
@@ -40,17 +54,18 @@ export default function BookManagement() {
       availableCopies,
     } = newBook;
 
-    // Basic required field check
     if (!title || !author) {
       setErrorMessage("Title and Author are required.");
       return;
     }
 
-    // Validation checks
-    if (isNaN(totalCopies) || totalCopies < 0) {
-      setErrorMessage(
-        "Total and Available Copies must be non-negative numbers."
-      );
+    if (
+      isNaN(totalCopies) ||
+      isNaN(availableCopies) ||
+      totalCopies < 0 ||
+      availableCopies < 0
+    ) {
+      setErrorMessage("Total and Available Copies must be non-negative.");
       return;
     }
 
@@ -72,26 +87,14 @@ export default function BookManagement() {
 
     const book = {
       ...newBook,
-      yearPublished: parseInt(newBook.yearPublished),
-      availableCopies: parseInt(newBook.totalCopies),
-      totalCopies: parseInt(newBook.totalCopies),
+      yearPublished: parseInt(yearPublished),
+      totalCopies: parseInt(totalCopies),
+      availableCopies: parseInt(availableCopies),
     };
+
     dispatch(createBook(book));
     setShowAddModal(false);
-    setNewBook({
-      title: "",
-      author: "",
-      genre: "",
-      isbn: "",
-      yearPublished: "",
-      totalCopies: "",
-      availableCopies: "",
-    });
-    setErrorMessage("");
-  };
-
-  const handleDeleteBook = (id) => {
-    dispatch(removeBook(id));
+    resetForm();
   };
 
   const handleUpdateBook = () => {
@@ -99,7 +102,6 @@ export default function BookManagement() {
       newBook;
     const currentYear = new Date().getFullYear();
 
-    // Field Validations
     if (!title || !author) {
       setErrorMessage("Title and Author are required.");
       return;
@@ -122,41 +124,35 @@ export default function BookManagement() {
       totalCopies < 0 ||
       availableCopies < 0
     ) {
-      setErrorMessage(
-        "Total and Available Copies must be non-negative numbers."
-      );
+      setErrorMessage("Total and Available Copies must be non-negative.");
       return;
     }
 
     if (availableCopies > totalCopies) {
-      setErrorMessage("Available copies cannot be more than total copies.");
+      setErrorMessage("Available copies cannot exceed total copies.");
       return;
     }
 
     const updatedBook = {
       ...newBook,
-      yearPublished: parseInt(newBook.yearPublished),
-      totalCopies: parseInt(newBook.availableCopies),
-      availableCopies: parseInt(newBook.totalCopies),
+      yearPublished: parseInt(yearPublished),
+      totalCopies: parseInt(totalCopies),
+      availableCopies: parseInt(availableCopies),
     };
 
     dispatch(editBook({ id: editBookId, updatedBook }));
-
-    // Reset form and close modal
     setShowAddModal(false);
-    setEditBookId(null);
-    setNewBook({
-      title: "",
-      author: "",
-      genre: "",
-      isbn: "",
-      yearPublished: "",
-      totalCopies: "",
-      availableCopies: "",
-    });
-
-    setErrorMessage("");
+    resetForm();
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-gray-600">
+        <i className="fas fa-spinner fa-spin text-4xl mb-3 text-blue-600"></i>
+        <p>Loading books...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -170,7 +166,6 @@ export default function BookManagement() {
         </button>
       </div>
 
-      {/* Books Table */}
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full">
@@ -190,7 +185,7 @@ export default function BookManagement() {
             <tbody>
               {books.map((book, index) => (
                 <tr
-                  key={index}
+                  key={book.bookId}
                   className="border-b border-gray-200 hover:bg-gray-50"
                 >
                   <td className="py-3 px-4">{index + 1}</td>
@@ -205,27 +200,13 @@ export default function BookManagement() {
                     <button
                       className="text-blue-500 hover:text-blue-700 mr-3"
                       onClick={() => {
-                        setNewBook({
-                          title: book.title,
-                          author: book.author,
-                          genre: book.genre,
-                          isbn: book.isbn,
-                          yearPublished: book.yearPublished,
-                          totalCopies: book.totalCopies,
-                          availableCopies: book.availableCopies,
-                        });
-                        setEditBookId(book.bookId); // set the ID of the book being edited
-                        setShowAddModal(true); // open the modal
+                        setNewBook(book);
+                        setEditBookId(book.bookId);
+                        setShowAddModal(true);
                       }}
                     >
                       <i className="fas fa-edit"></i>
                     </button>
-                    {/* <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => handleDeleteBook(book.bookId)}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button> */}
                   </td>
                 </tr>
               ))}
@@ -234,7 +215,7 @@ export default function BookManagement() {
         </div>
       </div>
 
-      {/* Add / Edit Book Modal */}
+      {/* Add/Edit Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-20">
           <div className="bg-white rounded-xl w-full max-w-md p-6">
@@ -246,161 +227,66 @@ export default function BookManagement() {
                 className="text-gray-500 hover:text-gray-700"
                 onClick={() => {
                   setShowAddModal(false);
-                  setEditBookId(null); // Reset edit mode
-                  setNewBook({
-                    title: "",
-                    author: "",
-                    genre: "",
-                    isbn: "",
-                    yearPublished: "",
-                    totalCopies: "",
-                    availableCopies: "",
-                  });
+                  resetForm();
                 }}
               >
                 <i className="fas fa-times"></i>
               </button>
             </div>
 
-            {/* FORM FIELDS (Same as before) */}
+            {/* Error */}
+            {errorMessage && (
+              <div className="text-red-600 text-sm font-medium mb-3">
+                {errorMessage}
+              </div>
+            )}
+
+            {/* FORM */}
             <div className="space-y-4">
-              {/* Title Field */}
-              {/* Error Message */}
-              {errorMessage && (
-                <div className="text-red-600 text-sm font-medium mt-2">
-                  {errorMessage}
-                </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Title *
-                </label>
-                <input
-                  type="text"
-                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none"
-                  value={newBook.title}
-                  onChange={(e) => {
-                    setErrorMessage(""); // Clear error on change
-                    setNewBook({ ...newBook, title: e.target.value });
-                  }}
-                />
-              </div>
-
-              {/* Author Field */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Author *
-                </label>
-                <input
-                  type="text"
-                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none"
-                  value={newBook.author}
-                  onChange={(e) => {
-                    setErrorMessage(""); // Clear error on change
-                    setNewBook({ ...newBook, author: e.target.value });
-                  }}
-                />
-              </div>
-
-              {/* Genre and ISBN */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
+              {[
+                { label: "Title *", key: "title", type: "text" },
+                { label: "Author *", key: "author", type: "text" },
+                { label: "Genre", key: "genre", type: "text" },
+                { label: "ISBN", key: "isbn", type: "text" },
+                {
+                  label: "Year Published",
+                  key: "yearPublished",
+                  type: "number",
+                },
+                { label: "Total Copies", key: "totalCopies", type: "number" },
+                {
+                  label: "Available Copies",
+                  key: "availableCopies",
+                  type: "number",
+                },
+              ].map((field) => (
+                <div key={field.key}>
                   <label className="block text-sm font-medium mb-1">
-                    Genre
+                    {field.label}
                   </label>
                   <input
-                    type="text"
-                    className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none"
-                    value={newBook.genre}
-                    onChange={(e) =>
-                      setNewBook({ ...newBook, genre: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">ISBN</label>
-                  <input
-                    type="text"
-                    className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none"
-                    value={newBook.isbn}
-                    onChange={(e) =>
-                      setNewBook({ ...newBook, isbn: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              {/* Year and Copies */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Year Published
-                  </label>
-                  <input
-                    type="number"
-                    className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none"
-                    value={newBook.yearPublished}
+                    type={field.type}
+                    className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none w-full"
+                    value={newBook[field.key]}
                     onChange={(e) => {
-                      setErrorMessage(""); // Clear error on change
-                      setNewBook({ ...newBook, yearPublished: e.target.value });
+                      setErrorMessage("");
+                      setNewBook({ ...newBook, [field.key]: e.target.value });
                     }}
                   />
                 </div>
+              ))}
 
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Total Copies
-                  </label>
-                  <input
-                    type="number"
-                    className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none"
-                    value={newBook.totalCopies}
-                    onChange={(e) => {
-                      setErrorMessage(""); // Clear error on change
-                      setNewBook({ ...newBook, totalCopies: e.target.value });
-                    }}
-                  />
-                </div>
-
-                {/* <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Available Copies
-                  </label>
-                  <input
-                    type="number"
-                    className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none"
-                    value={newBook.availableCopies}
-                    onChange={(e) => {
-                      setErrorMessage(""); // Clear error on change
-                      setNewBook({
-                        ...newBook,
-                        availableCopies: e.target.value,
-                      });
-                    }}
-                  />
-                </div> */}
-              </div>
-              {/* Buttons */}
+              {/* Actions */}
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   className="btn bg-gray-200 hover:bg-gray-300"
                   onClick={() => {
                     setShowAddModal(false);
-                    setEditBookId(null);
-                    setNewBook({
-                      title: "",
-                      author: "",
-                      genre: "",
-                      isbn: "",
-                      yearPublished: "",
-                      copies: "",
-                    });
-                    setErrorMessage("");
+                    resetForm();
                   }}
                 >
                   Cancel
                 </button>
-
                 <button
                   className="btn btn-primary"
                   onClick={editBookId ? handleUpdateBook : handleAddBook}

@@ -1,23 +1,29 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchBooks } from "../features/books/bookSlice.js";
-import {
-  fetchMembers,
-} from "../features/members/memberSlice.js";
+import { fetchMembers } from "../features/members/memberSlice.js";
 import { fetchTransactions } from "../features/transactions/transactionSlice.js";
+import OverdueBooksSummary from "./OverdueBooksSummary.jsx";
 
 export default function Dashboard() {
-   const dispatch = useDispatch();
-
-  // Get books from Redux
+  const dispatch = useDispatch();
   const books = useSelector((state) => state.book.books);
   const members = useSelector((state) => state.member.members);
   const transactions = useSelector((state) => state.transaction.transactions);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    dispatch(fetchBooks());
-    dispatch(fetchMembers());
+    Promise.all([
+      dispatch(fetchBooks()),
+      dispatch(fetchMembers()),
+      dispatch(fetchTransactions()),
+    ]).finally(() => setLoading(false));
   }, [dispatch]);
+
+  const activeMembers = members.filter((m) => m.membershipStatus === "ACTIVE");
+  const borrowedBooks = transactions.filter((t) => t.status === "BORROWED");
+  const overdueBooks = transactions.filter((t) => t.status === "OVERDUE");
 
   const stats = [
     {
@@ -28,23 +34,32 @@ export default function Dashboard() {
     },
     {
       title: "Active Members",
-      value: members.filter((m) => m.membershipStatus === "ACTIVE").length,
+      value: activeMembers.length,
       icon: "fas fa-users",
       color: "bg-secondary",
     },
     {
       title: "Borrowed Books",
-      value: transactions.filter((t) => t.status === "BORROWED").length,
+      value: borrowedBooks.length,
       icon: "fas fa-exchange-alt",
       color: "bg-accent",
     },
     {
       title: "Overdue Books",
-      value: transactions.filter((t) => t.status === "OVERDUE").length,
+      value: overdueBooks.length,
       icon: "fas fa-clock",
       color: "bg-red-500",
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-gray-600">
+        <i className="fas fa-spinner fa-spin text-4xl mb-3 text-blue-600"></i>
+        <p>Loading dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -89,19 +104,24 @@ export default function Dashboard() {
                     const member = members.find(
                       (m) => m.id === transaction.memberId
                     );
+
                     return (
                       <tr
                         key={transaction.id}
                         className="border-b hover:bg-gray-50 border-gray-200"
                       >
-                        <td className="py-3">{book?.title}</td>
-                        <td className="py-3">{member?.name}</td>
-                        <td className="py-3">{transaction.dueDate}</td>
+                        <td className="py-3">{book?.title || "-"}</td>
+                        <td className="py-3">{member?.name || "-"}</td>
+                        <td className="py-3">
+                          {transaction.dueDate?.split("T")[0] || "-"}
+                        </td>
                         <td className="py-3">
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${
-                              transaction.status === "Borrowed"
+                              transaction.status === "BORROWED"
                                 ? "bg-yellow-100 text-yellow-800"
+                                : transaction.status === "OVERDUE"
+                                ? "bg-red-100 text-red-800"
                                 : "bg-green-100 text-green-800"
                             }`}
                           >
@@ -117,52 +137,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Overdue Books */}
-        <div className="card">
-          <div className="p-5">
-            <h2 className="text-xl font-semibold mb-4">Overdue Books</h2>
-            <div className="space-y-4">
-              {transactions
-                .filter(
-                  (t) =>
-                    t.status === "OVERDUE" &&
-                    new Date(t.returnDate) < new Date()
-                )
-                .slice(0, 3)
-                .map((transaction) => {
-                  const book = books.find((b) => b.id === transaction.bookId);
-                  const member = members.find(
-                    (m) => m.id === transaction.memberId
-                  );
-                  const daysOverdue = Math.floor(
-                    (new Date() - new Date(transaction.dueDate)) /
-                      (1000 * 60 * 60 * 24)
-                  );
-                  return (
-                    <div
-                      key={transaction.id}
-                      className="flex items-center justify-between border-b pb-3 border-gray-200"
-                    >
-                      <div>
-                        <p className="font-medium">{book?.title}</p>
-                        <p className="text-sm text-gray-600">
-                          Borrowed by: {member?.name}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-red-500 font-medium">
-                          {daysOverdue} days overdue
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Due: {transaction.dueDate}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        </div>
+        {/* Overdue Books Summary */}
+        <OverdueBooksSummary displayNumber={3} />
       </div>
     </div>
   );

@@ -1,0 +1,30 @@
+// components/Header.jsx
+import React from "react";
+import NotificationsIcon from "./NotificationsIcon";
+
+export default function Header({ notifications, toggleSidebar }) {
+  return (
+    <header className="bg-primary text-white shadow-md">
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center">
+          <i className="fas fa-book text-2xl mr-3"></i>
+          <h1 className="text-xl font-bold">Library Management System</h1>
+        </div>
+        <div className="hidden md:flex items-center space-x-4">
+          <NotificationsIcon count={notifications.length} />
+          <div className="flex items-center">
+            <img
+              src="https://ui-avatars.com/api/?name=Admin"
+              alt="Admin"
+              className="w-8 h-8 rounded-full"
+            />
+            <span className="ml-2">Admin</span>
+          </div>
+        </div>
+        <button className="md:hidden text-white" onClick={toggleSidebar}>
+          <i className="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+    </header>
+  );
+}
