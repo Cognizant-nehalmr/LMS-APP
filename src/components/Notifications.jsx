@@ -209,13 +209,6 @@ export default function Notifications() {
               ></textarea>
             </div>
           </div>
-
-          {successMessage && (
-            <div className="text-green-600 font-medium mb-4">
-              {successMessage}
-            </div>
-          )}
-
           <div className="flex justify-end">
             {successMessage && (
               <div className="text-green-600 font-medium mb-4">
