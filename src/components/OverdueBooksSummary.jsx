@@ -14,12 +14,12 @@ const OverdueBooksSummary = ({ displayNumber }) => {
     .slice(0, displayNumber); // Adjust how many you want to display
 
   return (
-    <div className="card mb-6">
+    <div className="card">
       <div className="p-5">
         <h2 className="text-xl font-semibold mb-4">Overdue Books</h2>
         <div className="space-y-4">
           {overdueTransactions.length === 0 && (
-            <p className="text-sm text-gray-500">No overdue books.</p>
+            <p className="text-gray-500">No overdue books.</p>
           )}
 
           {overdueTransactions.map((transaction) => {

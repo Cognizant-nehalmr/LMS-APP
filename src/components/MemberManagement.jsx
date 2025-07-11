@@ -194,7 +194,7 @@ export default function MemberManagement() {
                 </label>
                 <input
                   type="text"
-                  className="input-field"
+                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-2 w-full caret-black"
                   value={newMember.name}
                   onChange={(e) =>
                     setNewMember({ ...newMember, name: e.target.value })
@@ -209,7 +209,7 @@ export default function MemberManagement() {
                 </label>
                 <input
                   type="email"
-                  className="input-field"
+                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-2 w-full caret-black"
                   value={newMember.email}
                   onChange={(e) =>
                     setNewMember({ ...newMember, email: e.target.value })
@@ -222,7 +222,7 @@ export default function MemberManagement() {
                 <label className="block text-sm font-medium mb-1">Phone</label>
                 <input
                   type="tel"
-                  className="input-field"
+                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-2 w-full caret-black"
                   value={newMember.phone}
                   onChange={(e) =>
                     setNewMember({ ...newMember, phone: e.target.value })
@@ -237,7 +237,7 @@ export default function MemberManagement() {
                 </label>
                 <textarea
                   rows="3"
-                  className="input-field"
+                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-2 w-full caret-black"
                   value={newMember.address}
                   onChange={(e) =>
                     setNewMember({ ...newMember, address: e.target.value })

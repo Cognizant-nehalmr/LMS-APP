@@ -25,7 +25,6 @@ export const cancelFine = (fineId) => fineServiceApi.put(`/${fineId}/cancel`);
 // GET Total Collected Fines
 export const getTotalCollectedFines = async () => {
   const response = await fineServiceApi.get("/collected");
-  console.log("Total Collected Fines:", response.data);
   return response.data;
 };
 

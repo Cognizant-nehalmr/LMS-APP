@@ -76,7 +76,7 @@ export default function BorrowReturn() {
                 </label>
                 <input
                   type="date"
-                  className="input-field"
+                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-2 w-full caret-black"
                   value={borrowDate}
                   onChange={(e) => {
                     setBorrowDate(e.target.value);
@@ -90,7 +90,7 @@ export default function BorrowReturn() {
                 </label>
                 <input
                   type="date"
-                  className="input-field"
+                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-2 w-full caret-black"
                   value={returnDate}
                   onChange={(e) => setReturnDate(e.target.value)}
                 />
@@ -103,7 +103,7 @@ export default function BorrowReturn() {
                   Select Book *
                 </label>
                 <select
-                  className="input-field"
+                  className="block w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 caret-black"
                   value={selectedBook}
                   onChange={(e) => setSelectedBook(e.target.value)}
                 >
@@ -120,16 +120,18 @@ export default function BorrowReturn() {
                   Select Member *
                 </label>
                 <select
-                  className="input-field"
+                  className="block w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
                   value={selectedMember}
                   onChange={(e) => setSelectedMember(e.target.value)}
                 >
                   <option value="">Select a member</option>
-                  {members.map((member) => (
-                    <option key={member.memberId} value={member.memberId}>
-                      {member.name} ({member.email})
-                    </option>
-                  ))}
+                  {members
+                    .filter((member) => member.membershipStatus === "ACTIVE")
+                    .map((member) => (
+                      <option key={member.memberId} value={member.memberId}>
+                        {member.name}
+                      </option>
+                    ))}
                 </select>
               </div>
             </div>
@@ -146,7 +148,9 @@ export default function BorrowReturn() {
             <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
             <div className="space-y-4">
               {transactions.slice(0, 3).length === 0 ? (
-                <p className="text-gray-500 text-sm">No recent transactions found.</p>
+                <p className="text-gray-500 text-sm">
+                  No recent transactions found.
+                </p>
               ) : (
                 transactions.slice(0, 3).map((transaction) => (
                   <div

@@ -72,7 +72,6 @@ export default function OverdueFines() {
   const handleUpdateFine = async () => {
     try {
       await dispatch(updateFines()).unwrap();
-      console.log("✅ Fines updated successfully");
     } catch (error) {
       console.error("❌ Failed to update fines:", error);
       alert("Something went wrong while updating fines.");
@@ -242,21 +241,22 @@ export default function OverdueFines() {
                       <td className="py-3 px-4">{fineType || "-"}</td>
                       <td className="py-3 px-4">
                         {status === "PENDING" && (
-                          <>
+                          <div className="flex gap-2">
                             <button
-                              className="btn btn-secondary px-3 py-1 text-sm"
+                              className="btn btn-secondary px-1 py-1 text-sm"
                               onClick={() => handleMarkAsPaid(fineId)}
                             >
                               Mark as Paid
                             </button>
                             <button
-                              className="btn btn-secondary px-3 py-1 text-sm ml-2"
+                              className="btn btn-secondary px-1 py-1 text-sm"
                               onClick={() => handleCancelPayment(fineId)}
                             >
                               Cancel Fine
                             </button>
-                          </>
+                          </div>
                         )}
+
                         {status === "PAID" && (
                           <button
                             className="btn btn-secondary px-3 py-1 text-sm"
@@ -265,6 +265,7 @@ export default function OverdueFines() {
                             Reverse Payment
                           </button>
                         )}
+
                         {status === "CANCELLED" && (
                           <span className="text-red-600 font-semibold px-2 py-1 text-sm rounded">
                             CANCELLED
@@ -301,7 +302,7 @@ export default function OverdueFines() {
                 </label>
                 <input
                   type="number"
-                  className="input-field w-full"
+                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-2 w-full caret-black"
                   value={newFine.transactionId}
                   onChange={(e) =>
                     setNewFine({ ...newFine, transactionId: e.target.value })
@@ -314,7 +315,7 @@ export default function OverdueFines() {
                   Fine Type *
                 </label>
                 <select
-                  className="input-field w-full"
+                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-2 w-full caret-black"
                   value={newFine.fineType}
                   onChange={(e) =>
                     setNewFine({ ...newFine, fineType: e.target.value })
@@ -332,7 +333,7 @@ export default function OverdueFines() {
                 </label>
                 <input
                   type="number"
-                  className="input-field w-full"
+                  className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-2 w-full caret-black"
                   value={newFine.amount}
                   onChange={(e) =>
                     setNewFine({ ...newFine, amount: e.target.value })

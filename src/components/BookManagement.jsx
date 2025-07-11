@@ -21,7 +21,6 @@ export default function BookManagement() {
     isbn: "",
     yearPublished: "",
     totalCopies: "",
-    availableCopies: "",
   });
 
   useEffect(() => {
@@ -36,7 +35,6 @@ export default function BookManagement() {
       isbn: "",
       yearPublished: "",
       totalCopies: "",
-      availableCopies: "",
     });
     setErrorMessage("");
     setEditBookId(null);
@@ -44,33 +42,15 @@ export default function BookManagement() {
 
   const handleAddBook = () => {
     const currentYear = new Date().getFullYear();
-    const {
-      title,
-      author,
-      genre,
-      isbn,
-      yearPublished,
-      totalCopies,
-      availableCopies,
-    } = newBook;
+    const { title, author, genre, isbn, yearPublished, totalCopies } = newBook;
 
     if (!title || !author) {
       setErrorMessage("Title and Author are required.");
       return;
     }
 
-    if (
-      isNaN(totalCopies) ||
-      isNaN(availableCopies) ||
-      totalCopies < 0 ||
-      availableCopies < 0
-    ) {
-      setErrorMessage("Total and Available Copies must be non-negative.");
-      return;
-    }
-
-    if (availableCopies > totalCopies) {
-      setErrorMessage("Available copies cannot exceed total copies.");
+    if (isNaN(totalCopies) || totalCopies < 0) {
+      setErrorMessage("Total Copies must be a non-negative number.");
       return;
     }
 
@@ -89,7 +69,7 @@ export default function BookManagement() {
       ...newBook,
       yearPublished: parseInt(yearPublished),
       totalCopies: parseInt(totalCopies),
-      availableCopies: parseInt(availableCopies),
+      availableCopies: parseInt(totalCopies), // Initially, available copies are equal to total copies
     };
 
     dispatch(createBook(book));
@@ -98,8 +78,7 @@ export default function BookManagement() {
   };
 
   const handleUpdateBook = () => {
-    const { title, author, yearPublished, totalCopies, availableCopies } =
-      newBook;
+    const { title, author, yearPublished, totalCopies } = newBook;
     const currentYear = new Date().getFullYear();
 
     if (!title || !author) {
@@ -118,18 +97,8 @@ export default function BookManagement() {
       return;
     }
 
-    if (
-      isNaN(totalCopies) ||
-      isNaN(availableCopies) ||
-      totalCopies < 0 ||
-      availableCopies < 0
-    ) {
+    if (isNaN(totalCopies) || totalCopies < 0) {
       setErrorMessage("Total and Available Copies must be non-negative.");
-      return;
-    }
-
-    if (availableCopies > totalCopies) {
-      setErrorMessage("Available copies cannot exceed total copies.");
       return;
     }
 
@@ -137,7 +106,6 @@ export default function BookManagement() {
       ...newBook,
       yearPublished: parseInt(yearPublished),
       totalCopies: parseInt(totalCopies),
-      availableCopies: parseInt(availableCopies),
     };
 
     dispatch(editBook({ id: editBookId, updatedBook }));
@@ -254,11 +222,6 @@ export default function BookManagement() {
                   type: "number",
                 },
                 { label: "Total Copies", key: "totalCopies", type: "number" },
-                {
-                  label: "Available Copies",
-                  key: "availableCopies",
-                  type: "number",
-                },
               ].map((field) => (
                 <div key={field.key}>
                   <label className="block text-sm font-medium mb-1">
@@ -266,7 +229,7 @@ export default function BookManagement() {
                   </label>
                   <input
                     type={field.type}
-                    className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none w-full"
+                    className="input-field border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-2 w-full caret-black"
                     value={newBook[field.key]}
                     onChange={(e) => {
                       setErrorMessage("");
