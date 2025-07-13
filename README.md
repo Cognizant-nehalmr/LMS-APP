@@ -66,15 +66,15 @@ lms-app/
 ---
 
 ## UI Section 
-[Dashboard](./assets/dashboard.png)
+![Dashboard](/assets/dashboard.png)
 
-[Book Management](/assets/book_management.png)
+![Book Management](/assets/book_management.png)
 
-[Member Management](/assets/member_management)
+![Member Management](/assets/member_management.png)
 
-[Transaction Management](./assets/transaction.png)
+![Transaction Management](/assets/transaction.png)
 
-[Notification Management](./notification.png)
+![Notification Management](/notification.png)
 
 ---
 ## Installation
