@@ -128,4 +128,4 @@ You can customize the application by modifying the components in the `src/compon
 
 ## License
 
-This project is licensed under the (LICENSE).
+This project is licensed under the !(LICENSE).
