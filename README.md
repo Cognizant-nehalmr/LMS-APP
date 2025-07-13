@@ -74,7 +74,7 @@ lms-app/
 
 ![Transaction Management](/assets/transaction.png)
 
-![Notification Management](/notification.png)
+![Notification Management](/assets/notification.png)
 
 ---
 ## Installation
