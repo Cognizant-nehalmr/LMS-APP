@@ -83,7 +83,7 @@ lms-app/
 
 1. Clone the repository:
    ```sh
-   git clone [<repository-url>](https://github.com/Cognizant-nehalmr/LMS-APP.git)
+   git clone https://github.com/Cognizant-nehalmr/LMS-APP.git
    cd lms-app
    ```
 
