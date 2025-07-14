@@ -66,15 +66,17 @@ lms-app/
 ---
 
 ## UI Section 
-![Dashboard](/assets/dashboard.png)
+![Dashboard](./assets/dashboard.png)
 
-![Book Management](/assets/book_management.png)
+![Book Management](/assets/book.png)
 
-![Member Management](/assets/member_management.png)
+![Member Management](/assets/member.png)
 
-![Transaction Management](/assets/transaction.png)
+![Transaction Management](./assets/transaction.png)
 
-![Notification Management](/assets/notification.png)
+![Fine Management](./assets/fine.png)
+
+![Notification Management](./assets/notification.png)
 
 ---
 ## Installation
@@ -128,4 +130,4 @@ You can customize the application by modifying the components in the `src/compon
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License.
